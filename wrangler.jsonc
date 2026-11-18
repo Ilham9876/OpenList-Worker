@@ -5,18 +5,19 @@
 // ⚠️ 本文件只声明 KV 一个存储绑定（见文件末 kv_namespaces），D1 / DO 等
 //    其它存储请按需在控制台添加。
 //
-// 为什么声明 KV 且【省略 id 字段】（不能写 "id": ""）：
-//   wrangler 会自动预配（automatic provisioning）：首次部署创建
-//   "项目名-绑定名" 的命名空间（此处即 openlist-tsworkers-kv）并绑定；
-//   二次部署通过服务端 inherit 复用已有绑定，不会重复创建。
+// 
+// Existing Cloudflare KV Namespace configuration.
 //
-// 注意：CI / 一键部署属非交互环境，wrangler 不会把生成的 id 回写进本文件。
-// 这是预期行为 —— 复用靠的是服务端 inherit 绑定，而非本地 id。
+// This deployment uses an existing KV Namespace.
+// The binding name is "KV", and the namespace ID must remain unchanged.
 //
-// ⚠️ 不要用 `wrangler kv namespace create` 手动建名为 "KV" 的命名空间：
-//   wrangler 的预配链路无法按 title 复用已有命名空间（KVHandler 未实现
-//   isConnectedToExistingResource），它会另建 openlist-tsworkers-kv，
-//   手动建的那个不会被任何绑定使用，成为孤儿资源。参见 Issue #34。
+// Do not remove or replace the namespace ID.
+// Removing it may cause Wrangler to provision a different namespace,
+// instead of using the existing namespace and its stored data.
+//
+// CI deployments use this explicit ID to bind the existing namespace.
+// No automatic provisioning or inherited binding is required.
+
 //
 // Secret（JWT_SECRET / ADMIN_PASS / ALLOW_URLS / MYSQL_URLS / EO_KV_URLS / CF_* 等）请在
 // .dev.vars.example 或 .env.example 中声明 —— 部署按钮据此生成输入项，
@@ -206,16 +207,26 @@
 
   // ===========================================================================
   // 存储绑定
+
   // ===========================================================================
+  // Storage bindings
+  // ===========================================================================
+
   //
-  // ▶ 方案 A：KV（默认启用，免费额度大、最通用）
-  //   ⚠️ 必须【完全省略 id 字段】，不能写成 "id": ""：
-  //      wrangler 配置校验会拒绝空字符串 id（"should have a string id field"）。
-  //   省略 id 后：首次部署由 wrangler 自动创建 openlist-tsworkers-kv 并绑定；
-  //   二次部署通过 inherit 复用已有绑定，不会重复创建。
-  //   若想改用账户里已有的 KV，把该命名空间的 id 填进来即可。
+  // Option A: KV (existing Cloudflare KV Namespace)
+  // This deployment uses an existing Cloudflare KV Namespace.
+  // Binding name: KV
+  // Namespace ID: Must match the existing namespace ID configured below.
+  // Keep the explicit ID to preserve access to existing KV data.
+  // Do not remove the ID or rely on automatic namespace provisioning.
   //
-  //  "kv_namespaces": [{ "binding": "KV" }],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "acc08f101244467292bda9924bdb5ed8"
+    }
+  ],
+
   //
   // ▶ 方案 B：D1（关系型，可与 Go 后端共享库；DB_FORMAT 建议改为 "sql"）
   //   控制台：Workers & Pages → D1 → 创建数据库 → 绑定到 Worker，变量名填 DB
