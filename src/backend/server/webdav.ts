@@ -39,6 +39,11 @@ import {
 import { buildWebDavPropfindResponse } from "../internal/webdav/webdav"
 import { safeErrorMessage } from "../pkg/errs"
 import { encodeDownloadPath } from "../pkg/path"
+import {
+  needDownloadSign,
+  signDownloadPath,
+  getSignExpiresIn,
+} from "../pkg/sign"
 
 /**
  * WebDAV 协议服务（挂载于 /dav/*）。
@@ -375,10 +380,27 @@ webdavRouter.all("/*", async (c) => {
         // 端点前缀（/p 还是 /d）与路径编码都由 getItem 决定（见
         // op/storage.ts resolveRawUrlPrefix）：/p 受 Go canProxy() 限制，未开启
         // 代理的存储会 403 proxy not allowed，因此不能在这里硬编码 /p。
-        return c.redirect(
-          rawUrl || `/api/d${encodeDownloadPath(actualPath)}`,
-          302,
-        )
+
+        const downloadUrl =
+          rawUrl || `/api/d${encodeDownloadPath(actualPath)}`
+
+        // Endpoint download tidak membawa Authorization WebDAV.
+        // Karena itu, tanda tangan harus disertakan dalam URL redirect.
+        if (await needDownloadSign(c, actualPath)) {
+          const sign = await signDownloadPath(
+            c,
+            actualPath,
+            await getSignExpiresIn(c),
+          )
+
+          const separator = downloadUrl.includes("?") ? "&" : "?"
+          return c.redirect(
+            `${downloadUrl}${separator}sign=${encodeURIComponent(sign)}`,
+            302,
+          )
+        }
+
+        return c.redirect(downloadUrl, 302)
       }
 
       case "PUT": {
