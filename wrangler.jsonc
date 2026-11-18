@@ -207,22 +207,44 @@
 
   // ===========================================================================
   // 存储绑定
+
   // ===========================================================================
+  // Storage bindings
+  // ===========================================================================
+
   //
-  // ▶ Option A: KV (existing Cloudflare KV Namespace)
-//   This deployment uses an existing Cloudflare KV Namespace.
-//   Binding name: KV
-//   Namespace ID: Must match the existing namespace ID above.
-//   Keep the explicit ID to preserve access to existing KV data.
-//   Do not remove the ID or rely on automatic namespace provisioning.
+  // Option A: KV (existing Cloudflare KV Namespace)
+  // This deployment uses an existing Cloudflare KV Namespace.
+  // Binding name: KV
+  // Namespace ID: Must match the existing namespace ID configured below.
+  // Keep the explicit ID to preserve access to existing KV data.
+  // Do not remove the ID or rely on automatic namespace provisioning.
   //
-  
-"kv_namespaces": [
-  {
-    "binding": "KV",
-    "id": "acc08f101244467292bda9924bdb5ed8"
-  }
-],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "acc08f101244467292bda9924bdb5ed8"
+    }
+  ],
+
+  // ===========================================================================
+  // Storage bindings
+  // ===========================================================================
+
+  //
+  // Option A: KV (existing Cloudflare KV Namespace)
+  // This deployment uses an existing Cloudflare KV Namespace.
+  // Binding name: KV
+  // Namespace ID: Must match the existing namespace ID configured below.
+  // Keep the explicit ID to preserve access to existing KV data.
+  // Do not remove the ID or rely on automatic namespace provisioning.
+  //
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "acc08f101244467292bda9924bdb5ed8"
+    }
+  ],
 
   //
   // ▶ 方案 B：D1（关系型，可与 Go 后端共享库；DB_FORMAT 建议改为 "sql"）
