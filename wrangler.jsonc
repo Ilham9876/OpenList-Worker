@@ -227,27 +227,6 @@
     }
   ],
 
-  // ===========================================================================
-  // Storage bindings
-  // ===========================================================================
-  // Storage bindings
-  // ===========================================================================
-
-  //
-  // Option A: KV (existing Cloudflare KV Namespace)
-  // This deployment uses an existing Cloudflare KV Namespace.
-  // Binding name: KV
-  // Namespace ID: Must match the existing namespace ID configured below.
-  // Keep the explicit ID to preserve access to existing KV data.
-  // Do not remove the ID or rely on automatic namespace provisioning.
-  //
-  "kv_namespaces": [
-    {
-      "binding": "KV",
-      "id": "acc08f101244467292bda9924bdb5ed8"
-    }
-  ],
-
   //
   // ▶ 方案 B：D1（关系型，可与 Go 后端共享库；DB_FORMAT 建议改为 "sql"）
   //   控制台：Workers & Pages → D1 → 创建数据库 → 绑定到 Worker，变量名填 DB
